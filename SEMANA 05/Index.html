@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Galería Dinámica de Imágenes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Galería Dinámica</h1>
+
+    <div class="controls">
+        <input 
+            type="url" 
+            id="imageUrl" 
+            placeholder="Ingrese la URL de la imagen"
+        >
+        <button id="addImageBtn">Agregar Imagen</button>
+        <button id="deleteImageBtn">Eliminar Imagen Seleccionada</button>
+    </div>
+
+    <div id="gallery" class="gallery">
+        <!-- Las imágenes se agregarán dinámicamente aquí -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
