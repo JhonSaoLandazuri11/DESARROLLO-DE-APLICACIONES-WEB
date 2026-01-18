@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 06</title>
+    <link rel="stylesheet" href="Styles.css">
+</head>
+<body>
+    <h1>
+        Contactanos
+    </h1>
+    <main class="conteiner">
+        <form id="registForm" novalidate>
+            <div class="field">
+                <label for="Nombre">Nombres:</label>
+                <input type="text" id = "Nombre" name="Nombre" placeholder="Joao Mario" autocomplete="name" required>
+                <small class="error" id="NombreError"></small>
+            </div>
+            <div class="field">
+                <label for="Apellidos">Apellidos:</label>
+                <input type="text" id = "Apellidos" name="Apellidos" placeholder="Landazuri Molina" autocomplete="name" required>
+                <small class="error" id="ApellidosError"></small>
+            </div>
+            <div class="field">
+                <label for="Email">E-mail:</label>
+                <input type="text" id = "Email" name="Email" placeholder="joao@gmail.com" autocomplete="name" required>
+                <small class="error" id="EmailError"></small>
+            </div>
+            <div class="field">
+                <label for="Contraseña">Contraseña:</label>
+                <input type="password" id = "Contraseña" name="Contraseña" placeholder="Ingrese su contraseña" autocomplete="name" required>
+                <small class="error" id="ContraseñaError"></small>
+            </div>
+            <div class="field">
+                <label for="Corfirmacion_contraseña">Confirmar Contraseña:</label>
+                <input type="password" id = "Corfirmacion_contraseña" name="Corfirmacion_contraseña" placeholder="Confirme su contraseña" autocomplete="name" required>
+                <small class="error" id="Corfirmacion_contraseñaError"></small>
+            </div>
+            <div class="field">
+                <label for="Descripcion">Describa su Mensaje</label>
+                <textarea id="Descripcion" name="Descripcion"
+                    placeholder="Escriba aquí su mensaje..."
+                    required></textarea>
+                <small class="error" id="DescripcionError"></small>
+            </div>
+        
+            <div class="action">
+                <button type="submit" id="BtnEnviar" disabled>Enviar</button>
+                <button type="reset" id="BtnReset" class="secondary">Reiniciar</button>
+            </div>
+            <!--Mensaje de Exito-->
+            <div id="MensjaseExito" class="sucess-menssage" aria-live="polite"></div>
+
+
+        </form>
+    </main>
+    <script src="Script.js"></script>
+    
+</body>
+</html>
