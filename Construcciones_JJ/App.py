@@ -1,26 +1,26 @@
-from flask import Flask, render_templates
+from flask import Flask, render_template, url_for, request, redirect, flash
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def inicio():
-    return render_templates("inicio.html")
+    return render_template('index.html')
 
-@app.route("/quienes-somos")
-def quienes_somos():
-    return render_templates("quienes.html")
-
-@app.route("/servicios")
+@app.route('/servicios')
 def servicios():
-    return render_templates("servicios.html")
+    return render_template('servicios.html')
 
-@app.route("/proyectos")
+@app.route('/proyectos')
 def proyectos():
-    return render_templates("proyectos.html")
+    return render_template('proyectos.html')
 
-@app.route("/contactos")
+@app.route('/contactos')
 def contactos():
-    return render_template("contactos.html")
+    return render_template('contactos.html')
 
-if __name__ == "__main__":
+@app.route('/quienes')
+def quienes():
+    return render_template('quienes.html')
+
+if __name__ == '__main__':
     app.run(debug=True)
