@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Construcciones JJ</title>
+    <title>{% block title %}Construcciones JJ{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 
@@ -14,6 +15,8 @@
             <a href="/proyectos">Proyectos</a>
             <a href="/quienes">Quiénes somos</a>
             <a href="/contactos">Contactos</a>
+            <a href="/productos">Productos</a>
+            
         </nav>
     </header>
 
