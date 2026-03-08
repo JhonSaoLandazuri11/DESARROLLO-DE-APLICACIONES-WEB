@@ -1,0 +1,14 @@
+[
+    {
+        "nombre": "Carro",
+        "precio": "333",
+        "cantidad": "222",
+        "descripcion": "222"
+    },
+    {
+        "nombre": "Cervesa",
+        "precio": "0.09",
+        "cantidad": "6",
+        "descripcion": "222"
+    }
+]

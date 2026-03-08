@@ -1,0 +1,62 @@
+{%extends "base.html"%}
+{%block title%}Datos{%endblock%}
+
+{%block content%}
+<h2>Persistencia de datos con txt, JSON, Csv</h2>
+
+<form method="POST">
+
+    <label>Nombre:</label>
+    <input type="text" name="nombre"><br><br>
+
+    <label>Precio</label>
+    <input type="number" name="precio" step="0.01" min="0">
+
+    <label>Cantidad</label>
+    <input type="number" name="cantidad" step="1" min="0">
+
+    <label>Descripicion</label>
+    <input type="text" name="descripcion">
+
+    <!-- Creacion de botón para guardar los datos -->
+    <button type="submit">Guardar</button>
+
+</form>
+
+<hr>
+
+<h3>TXT</h3>
+<ul>
+    {% for producto in datos_txt %}
+        <li>{{ producto }}</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h3>JSON</h3>
+<pre>{{ datos_json | tojson(indent=2) }}</pre>
+
+<hr>
+
+<h3>CSV</h3>
+<table border="1">
+    <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Descripicion</th>
+    </tr>
+
+    {% for producto in datos_csv %}
+    <tr>
+        <td>{{ producto[0] }}</td>
+        <td>{{ producto[1] }}</td>
+        <td>{{ producto[2] }}</td>
+        <td>{{ producto[3] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{%endblock%}
