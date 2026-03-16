@@ -5,7 +5,8 @@ from Inventario.Inventario import Inventario
 from Inventario.productos import Producto
 from flask_sqlalchemy import SQLAlchemy
 from Inventario.Inventario_persistencia import leer_json, guardar_json, guardar_csv, leer_csv, guardar_txt, leer_txt  
-
+from Inventario.Base_datos import get_connection
+from conexion.conexion import get_connection
 import os   # ✅ agregado para controlar rutas
 
 app = Flask(__name__)
@@ -22,7 +23,10 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 print("Ruta del proyecto:", BASE_DIR)
 
 
-init_db.init_db()
+# ❗ CORRECCIÓN: ejecutar dentro del contexto de Flask
+with app.app_context():
+    init_db.init_db()
+
 inventario = Inventario()
 inventario.cargar_productos()
 
@@ -119,6 +123,26 @@ def eliminar_producto(id):
     flash('Producto eliminado exitosamente', 'success')
     return redirect(url_for('productos'))
 
+#Listar productos con MySQL
+@app.route('/productos_mysql')
+def productos_mysql():
+    try:
+        conn = get_connection();
+        if conn is None:
+            flash('No se pudo conectar a la base de datos', 'danger')
+            return redirect(url_for('productos'))
+        
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, nombre, cantidad, descripcion, precio FROM productos")       
+        productos_mysql = cursor.fetchall()
+        print(productos_mysql)  # Verificar los datos obtenidos
+        cursor.close()
+        conn.close()    
+        return render_template('productos.html', productos=productos_mysql)
+    except Exception as e:  
+        flash(f'Error al obtener productos: {e}', 'danger')
+        return redirect(url_for('productos'))
+
 
 # ✅ RUTA PARA PERSISTENCIA DE DATOS
 @app.route('/datos', methods=['GET', 'POST'])
@@ -169,6 +193,23 @@ def mostrar_datos():
         datos_csv=datos_csv
     )
 
+
+#Ruta de conexion a la base de datos en mysql
+@app.route('/db_test')
+def db_test():
+    try:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM usuario")
+            result = cursor.fetchall()
+
+            cursor.close()
+
+        return str(result)
+
+    except Exception as e:
+        return f"Error al conectar a la base de datos: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)
