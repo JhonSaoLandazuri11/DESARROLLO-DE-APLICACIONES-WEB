@@ -1,49 +1,97 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
-from formulary import ProductoForm
-import Inventario.Base_datos as init_db
-from Inventario.Inventario import Inventario
-from Inventario.productos import Producto
-from flask_sqlalchemy import SQLAlchemy
-from Inventario.Inventario_persistencia import leer_json, guardar_json, guardar_csv, leer_csv, guardar_txt, leer_txt  
-from Inventario.Base_datos import get_connection
-from conexion.conexion import get_connection
-import os   # ✅ agregado para controlar rutas
+from flask import Flask, render_template, request, redirect, url_for, flash
+from models.db import db
+from models.cliente import Cliente
+
+from servicios.cliente_servicio import *
+from servicios.servicio_servicio import *
+from servicios.factura_servicio import *
+from servicios.pago_servicio import *
+
+from formas.login_form import LoginForm
+from formas.registro_form import RegistroForm
+from formas.servicio_form import ServicioForm
+
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
-
-# Inicializar la base de datos y el inventario
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventario.db'
+app.config['SECRET_KEY'] = 'clave_secreta'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/Sistema_factura'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+db.init_app(app)
+
+# =========================
+# 🔐 LOGIN
+# =========================
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
-# ✅ asegurar que la app trabaje en la carpeta correcta
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-print("Ruta del proyecto:", BASE_DIR)
+@login_manager.user_loader
+def load_user(user_id):
+    return Cliente.query.get(int(user_id))
 
 
-# ❗ CORRECCIÓN: ejecutar dentro del contexto de Flask
-with app.app_context():
-    init_db.init_db()
+# =========================
+# 🔐 AUTENTICACIÓN
+# =========================
 
-inventario = Inventario()
-inventario.cargar_productos()
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    form = RegistroForm()
 
+    if form.validate_on_submit():
+        password_hash = generate_password_hash(form.password.data)
+
+        crear_cliente(
+            form.nombre.data,
+            form.apellido.data,
+            form.telefono.data,
+            form.email.data,
+            password_hash
+        )
+
+        flash('Registro exitoso', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('auth/registro.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        cliente = obtener_cliente_por_email(form.email.data)
+
+        if cliente and check_password_hash(cliente.password, form.password.data):
+            login_user(cliente)
+            flash('Bienvenido', 'success')
+            return redirect(url_for('inicio'))
+        else:
+            flash('Credenciales incorrectas', 'danger')
+
+    return render_template('auth/login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Sesión cerrada', 'info')
+    return redirect(url_for('login'))
+
+
+# =========================
+# 🏠 PÁGINAS
+# =========================
 
 @app.route('/')
 def inicio():
     return render_template('index.html')
-
-
-@app.route('/servicios')
-def servicios():
-    return render_template('servicios.html')
-
-
-@app.route('/proyectos')
-def proyectos():
-    return render_template('proyectos.html')
 
 
 @app.route('/contactos')
@@ -56,160 +104,78 @@ def quienes():
     return render_template('quienes.html')
 
 
-# ✅ LISTAR PRODUCTOS
-@app.route("/productos")
-def productos():
-    inventario.cargar_productos()
-    productos = inventario.productos.values()
-    return render_template("productos.html", productos=productos)
+@app.route('/proyectos')
+def proyectos():
+    return render_template('proyectos.html')
 
 
-# ✅ CREAR PRODUCTO
-@app.route("/productos/nuevo", methods=["GET", "POST"])
-def producto_nuevo():
-    form = ProductoForm()
+# =========================
+# 🧩 SERVICIOS (CRUD)
+# =========================
 
-    if form.validate_on_submit():
-        inventario.agregar_producto(
-            form.nombre.data,
-            form.precio.data,
-            form.cantidad.data,
-            form.descripcion.data
-        )
-        flash("Producto creado correctamente", "success")
-        return redirect(url_for("productos"))
-
-    return render_template("producto_form.html", form=form)
+@app.route('/servicios')
+@login_required
+def listar_servicios():
+    servicios = obtener_servicios()
+    return render_template('servicios/listar.html', servicios=servicios)
 
 
-# ✅ LISTA ALTERNA (SE MANTIENE)
-@app.route("/productos/lista")
-def listar_productos():
-    inventario.cargar_productos()
-    productos = inventario.productos.values()
-    return render_template("productos/productos.html", productos=productos)
-
-
-# ✅ EDITAR PRODUCTO
-@app.route('/productos/editar/<int:id>', methods=['GET', 'POST'])
-def editar_producto(id):
-    inventario.cargar_productos()
-    producto = inventario.productos.get(id)
-
-    if not producto:
-        flash('Producto no encontrado', 'danger')
-        return redirect(url_for('productos'))
-
-    form = ProductoForm(obj=producto)
+@app.route('/servicios/nuevo', methods=['GET', 'POST'])
+@login_required
+def nuevo_servicio():
+    form = ServicioForm()
 
     if form.validate_on_submit():
-        inventario.editar_producto(
-            id,
-            form.nombre.data,
-            form.precio.data,
-            form.cantidad.data,
-            form.descripcion.data
+        crear_servicio(
+            form.descripcion.data,
+            form.costo.data,
+            form.fecha_inicio.data,
+            form.fecha_fin.data,
+            form.estado.data,
+            form.id_cliente.data
         )
-        flash('Producto actualizado correctamente', 'success')
-        return redirect(url_for('productos'))
+        flash('Servicio creado correctamente', 'success')
+        return redirect(url_for('listar_servicios'))
 
-    return render_template("producto_form.html", form=form, editar=True)
-
-
-# ✅ ELIMINAR PRODUCTO
-@app.route('/productos/eliminar/<int:id>', methods=['POST'])
-def eliminar_producto(id):
-    inventario.eliminar_producto(id)
-    flash('Producto eliminado exitosamente', 'success')
-    return redirect(url_for('productos'))
-
-#Listar productos con MySQL
-@app.route('/productos_mysql')
-def productos_mysql():
-    try:
-        conn = get_connection();
-        if conn is None:
-            flash('No se pudo conectar a la base de datos', 'danger')
-            return redirect(url_for('productos'))
-        
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, nombre, cantidad, descripcion, precio FROM productos")       
-        productos_mysql = cursor.fetchall()
-        print(productos_mysql)  # Verificar los datos obtenidos
-        cursor.close()
-        conn.close()    
-        return render_template('productos.html', productos=productos_mysql)
-    except Exception as e:  
-        flash(f'Error al obtener productos: {e}', 'danger')
-        return redirect(url_for('productos'))
+    return render_template('servicios/formulario.html', form=form)
 
 
-# ✅ RUTA PARA PERSISTENCIA DE DATOS
-@app.route('/datos', methods=['GET', 'POST'])
-def mostrar_datos():
-
-    if request.method == 'POST':
-
-        nombre = request.form.get('nombre')
-        precio = request.form.get('precio')
-        cantidad = request.form.get('cantidad')
-        descripcion = request.form.get('descripcion')
-
-        # evitar guardar registros vacíos
-        if nombre and precio and cantidad and descripcion:
-
-            datos = {
-                "nombre": nombre,
-                "precio": precio,
-                "cantidad": cantidad,
-                "descripcion": descripcion
-            }
-
-            # Guardar en TXT
-            guardar_txt(f"{nombre}, {precio}, {cantidad}, {descripcion}")
-
-            # Guardar en JSON
-            guardar_json(datos)
-
-            # Guardar en CSV
-            guardar_csv(datos)
-
-            flash('Datos guardados correctamente', 'success')
-
-        else:
-            flash('Todos los campos son obligatorios', 'danger')
-
-        return redirect(url_for('mostrar_datos'))
-
-    # Leer los datos
-    datos_txt = leer_txt()
-    datos_json = leer_json()
-    datos_csv = leer_csv()
-
-    return render_template(
-        'datos.html',
-        datos_txt=datos_txt,
-        datos_json=datos_json,
-        datos_csv=datos_csv
-    )
+@app.route('/servicios/eliminar/<int:id>', methods=['POST'])
+@login_required
+def eliminar_servicio_route(id):
+    eliminar_servicio(id)
+    flash('Servicio eliminado', 'warning')
+    return redirect(url_for('listar_servicios'))
 
 
-#Ruta de conexion a la base de datos en mysql
-@app.route('/db_test')
-def db_test():
-    try:
-        with get_connection() as conn:
-            cursor = conn.cursor()
+# =========================
+# 🧾 FACTURAS
+# =========================
 
-            cursor.execute("SELECT * FROM usuario")
-            result = cursor.fetchall()
+@app.route('/facturas')
+@login_required
+def listar_facturas():
+    facturas = obtener_facturas()
+    return render_template('facturas/listar.html', facturas=facturas)
 
-            cursor.close()
 
-        return str(result)
+# =========================
+# 💳 PAGOS
+# =========================
 
-    except Exception as e:
-        return f"Error al conectar a la base de datos: {e}"
+@app.route('/pagos')
+@login_required
+def listar_pagos():
+    pagos = obtener_pagos()
+    return render_template('pagos/listar.html', pagos=pagos)
+
+
+# =========================
+# 🚀 RUN
+# =========================
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+
     app.run(debug=True)

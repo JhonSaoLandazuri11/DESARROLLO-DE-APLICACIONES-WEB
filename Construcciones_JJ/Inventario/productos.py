@@ -1,26 +1,53 @@
-#Creacion de Clase Producto
+# modelos/servicio.py
 
-class Producto:
-    def __init__(self, id=None, nombre="", precio=0.0, cantidad=0, descripcion=""):
-        self.id = id
-        self.nombre = nombre
-        self.precio = precio
-        self.cantidad = cantidad
+class Servicio:
+    def __init__(self, id_servicio, descripcion, costo, fecha_inicio, fecha_fin, estado, id_cliente):
+        self.id_servicio = id_servicio
         self.descripcion = descripcion
+        self.costo = costo
+        self.fecha_inicio = fecha_inicio
+        self.fecha_fin = fecha_fin
+        self.estado = estado
+        self.id_cliente = id_cliente
 
-    def __str__(self):
-        return f"Producto: {self.nombre}, Precio: {self.precio}, Cantidad: {self.cantidad}, Descripción: {self.descripcion}"
-    
-    # Para INSERT en la BD (NO incluye el id porque es AUTOINCREMENT)
+    # =========================
+    # 🔹 Convertir a TUPLA
+    # =========================
     def to_tuple(self):
-        return (self.nombre, self.precio, self.cantidad, self.descripcion)
-    
-    # Para trabajar como diccionario (útil en templates o APIs)
+        return (
+            self.id_servicio,
+            self.descripcion,
+            self.costo,
+            self.fecha_inicio,
+            self.fecha_fin,
+            self.estado,
+            self.id_cliente
+        )
+
+    # =========================
+    # 🔹 Convertir a DICCIONARIO
+    # =========================
     def to_dict(self):
         return {
-            "id": self.id,
-            "nombre": self.nombre,
-            "precio": self.precio,
-            "cantidad": self.cantidad,
-            "descripcion": self.descripcion
+            'id_servicio': self.id_servicio,
+            'descripcion': self.descripcion,
+            'costo': self.costo,
+            'fecha_inicio': self.fecha_inicio,
+            'fecha_fin': self.fecha_fin,
+            'estado': self.estado,
+            'id_cliente': self.id_cliente
         }
+
+    # =========================
+    # 🔹 Convertir a LISTA
+    # =========================
+    def to_list(self):
+        return [
+            self.id_servicio,
+            self.descripcion,
+            self.costo,
+            self.fecha_inicio,
+            self.fecha_fin,
+            self.estado,
+            self.id_cliente
+        ]

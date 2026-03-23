@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    
+    <div class="card shadow-lg border-0">
+
+        <!-- HEADER -->
+        <div class="card-header text-white text-center"
+             style="background: linear-gradient(135deg, #16a34a, #065f46);">
+            <h4 class="mb-0">Registro de Cliente</h4>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body p-4">
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- NOMBRE -->
+                <div class="mb-3">
+                    {{ form.nombre.label(class="form-label fw-semibold") }}
+                    {{ form.nombre(class="form-control", placeholder="Ingrese su nombre") }}
+                </div>
+
+                <!-- APELLIDO -->
+                <div class="mb-3">
+                    {{ form.apellido.label(class="form-label fw-semibold") }}
+                    {{ form.apellido(class="form-control", placeholder="Ingrese su apellido") }}
+                </div>
+
+                <!-- EMAIL -->
+                <div class="mb-3">
+                    {{ form.email.label(class="form-label fw-semibold") }}
+                    {{ form.email(class="form-control", placeholder="Ingrese su correo") }}
+                </div>
+
+                <!-- TELÉFONO -->
+                <div class="mb-3">
+                    {{ form.telefono.label(class="form-label fw-semibold") }}
+                    {{ form.telefono(class="form-control", placeholder="Ingrese su teléfono") }}
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-3">
+                    {{ form.password.label(class="form-label fw-semibold") }}
+                    {{ form.password(class="form-control", placeholder="Ingrese su contraseña") }}
+                </div>
+
+                <!-- BOTÓN -->
+                <div class="d-grid">
+                    {{ form.submit(class="btn btn-success btn-lg") }}
+                </div>
+            </form>
+
+            <hr>
+
+            <!-- LOGIN -->
+            <p class="text-center mb-0">
+                ¿Ya tienes cuenta?
+                <a href="{{ url_for('login') }}" class="fw-semibold text-success">
+                    Iniciar sesión
+                </a>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
-#Clase de conexion a la base de datos
+# conexion/db.py
+
 import mysql.connector
 from mysql.connector import Error
 
@@ -6,29 +7,16 @@ def get_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            database='sitema_facturas',
-            user = 'root',
-            password = '123456'
+            database='Servicios_m_mecanica',  # Ajustar al nombre real
+            user='root',
+            password='123456'
         )
-        if connection.is_connected():
-            return connection
+        return connection
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print(f"Error al conectar a MySQL: {e}")
         return None
-def init_db():
-    connection = get_connection()
-    if connection:
-        cursor = connection.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS productos (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                nombre VARCHAR(255) NOT NULL,
-                descripcion TEXT,
-                precio DECIMAL(10, 2) NOT NULL,
-                cantidad INT NOT NULL
-            )
-        ''')
-        connection.commit()
-        cursor.close()
+
+
+def close_connection(connection):
+    if connection and connection.is_connected():
         connection.close()
-        

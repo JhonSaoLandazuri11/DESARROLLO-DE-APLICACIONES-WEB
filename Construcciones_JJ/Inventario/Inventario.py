@@ -1,64 +1,110 @@
-#Creación de clase Inventario
-from .productos import Producto
-from .Base_datos import init_db, get_connection
+from conexion.db import get_connection
+from decimal import Decimal
 
-class Inventario:
+class Servicios:
     def __init__(self):
-        self.productos = {}
+        self.servicios = {}
 
-    def cargar_productos(self):
-        init_db()
-        with get_connection() as conn:
-            cursor = conn.execute("SELECT * FROM productos")
-            for row in cursor:
-                producto = Producto(
-                    id=row["id"],
-                    nombre=row["nombre"],
-                    precio=row["precio"],
-                    cantidad=row["cantidad"],
-                    descripcion=row["descripcion"]
-                )
-                self.productos[producto.id] = producto   # ✅ usar ID
+    # cargar servicios desde la BD
+    def cargar_desde_db(self):
+        conn = get_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute('SELECT * FROM servicios')
 
-    def listar_productos(self):
-        return [p.to_tuple() for p in self.productos.values()]
+            for row in cursor.fetchall():
+                self.servicios[row['id_servicio']] = row
 
-    def agregar_producto(self, nombre, precio, cantidad, descripcion):
-        with get_connection() as conn:
+            cursor.close()
+            conn.close()
+
+    # listar servicios
+    def listar_servicios(self):
+        return list(self.servicios.values())
+
+    # buscar por descripción
+    def buscar_por_descripcion(self, texto):
+        texto = texto.lower().strip()
+        resultados = []
+
+        for servicio in self.servicios.values():
+            if texto in servicio['descripcion'].lower():
+                resultados.append(servicio)
+
+        return resultados
+
+    # agregar servicio
+    def agregar_servicio(self, descripcion, costo, fecha_inicio, fecha_fin, estado, id_cliente):
+        conn = get_connection()
+        if conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO productos (nombre, precio, cantidad, descripcion) VALUES (?, ?, ?, ?)",
-                (nombre, precio, cantidad, descripcion)
-            )
+
+            cursor.execute('''
+                INSERT INTO servicios (descripcion, costo, fecha_inicio, fecha_fin, estado, id_cliente)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (descripcion, float(costo), fecha_inicio, fecha_fin, estado, id_cliente))
+
+            conn.commit()
+            nuevo_id = cursor.lastrowid
+
+            # guardar en memoria
+            self.servicios[nuevo_id] = {
+                'id_servicio': nuevo_id,
+                'descripcion': descripcion,
+                'costo': float(costo),
+                'fecha_inicio': fecha_inicio,
+                'fecha_fin': fecha_fin,
+                'estado': estado,
+                'id_cliente': id_cliente
+            }
+
+            cursor.close()
+            conn.close()
+
+    # actualizar servicio
+    def actualizar_servicio(self, id_servicio, descripcion, costo, fecha_inicio, fecha_fin, estado, id_cliente):
+        id_servicio = int(id_servicio)
+
+        if id_servicio not in self.servicios:
+            return False
+
+        conn = get_connection()
+        if conn:
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                UPDATE servicios 
+                SET descripcion=%s, costo=%s, fecha_inicio=%s, fecha_fin=%s, estado=%s, id_cliente=%s
+                WHERE id_servicio=%s
+            ''', (descripcion, float(costo), fecha_inicio, fecha_fin, estado, id_cliente, id_servicio))
+
             conn.commit()
 
-    # ✅ EDITAR POR ID
-    def editar_producto(self, id, nombre, precio, cantidad, descripcion):
-        with get_connection() as conn:
-            conn.execute("""
-                UPDATE productos 
-                SET nombre = ?, precio = ?, cantidad = ?, descripcion = ?
-                WHERE id = ?
-            """, (nombre, precio, cantidad, descripcion, id))
-            conn.commit()
+            # actualizar en memoria
+            self.servicios[id_servicio].update({
+                'descripcion': descripcion,
+                'costo': float(costo),
+                'fecha_inicio': fecha_inicio,
+                'fecha_fin': fecha_fin,
+                'estado': estado,
+                'id_cliente': id_cliente
+            })
 
-        # Actualizar también en el diccionario local
-        if id in self.productos:
-            producto = self.productos[id]
-            producto.nombre = nombre
-            producto.precio = precio
-            producto.cantidad = cantidad
-            producto.descripcion = descripcion
+            cursor.close()
+            conn.close()
+            return True
 
-    # ✅ ELIMINAR POR ID
-    def eliminar_producto(self, id):
-        id = int(id)  # asegurar que sea entero
-        with get_connection() as conn:
-            cursor = conn.execute("DELETE FROM productos WHERE id = ?", (id,))
-            conn.commit()
-            print(f"Filas afectadas en la DB: {cursor.rowcount}")  # opcional debug
+    # eliminar servicio
+    def eliminar_servicio(self, id_servicio):
+        if id_servicio in self.servicios:
+            conn = get_connection()
+            if conn:
+                cursor = conn.cursor()
 
-        # Eliminar también del diccionario local
-        if id in self.productos:
-            del self.productos[id]
-            print(f"Producto con id {id} eliminado del diccionario local")
+                cursor.execute('DELETE FROM servicios WHERE id_servicio=%s', (id_servicio,))
+                conn.commit()
+
+                self.servicios.pop(id_servicio)
+
+                cursor.close()
+                conn.close()
