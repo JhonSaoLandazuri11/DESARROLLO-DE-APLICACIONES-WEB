@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- BIENVENIDA -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Sistema de Gestión de Servicios</h1>
+        <h3>Construcciones y Servicios Metalmecánica JJ</h3>
+        <p class="text-muted">
+            Bienvenido al sistema administrativo. Desde aquí podrá gestionar clientes,
+            servicios, facturación y pagos de la empresa.
+        </p>
+        <a href="/login" class="btn btn-dark btn-lg mt-3">
+            Iniciar Sesión
+        </a>
+    </div>
+
+    <!-- MÓDULOS DEL SISTEMA -->
+    <div class="row text-center">
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0 p-4 h-100">
+                <h4>👤 Clientes</h4>
+                <p class="text-muted">
+                    Registro y administración de clientes de la empresa.
+                </p>
+                <a href="/clientes" class="btn btn-primary">Ir a Clientes</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0 p-4 h-100">
+                <h4>🛠️ Servicios</h4>
+                <p class="text-muted">
+                    Gestión de servicios solicitados y estado de trabajos.
+                </p>
+                <a href="/servicios" class="btn btn-primary">Ir a Servicios</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0 p-4 h-100">
+                <h4>🧾 Facturación</h4>
+                <p class="text-muted">
+                    Administración de facturas generadas por servicios.
+                </p>
+                <a href="/facturas" class="btn btn-primary">Ir a Facturación</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0 p-4 h-100">
+                <h4>💰 Pagos</h4>
+                <p class="text-muted">
+                    Registro de pagos y control de saldos pendientes.
+                </p>
+                <a href="/pagos" class="btn btn-primary">Ir a Pagos</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- INFORMACIÓN DEL SISTEMA -->
+    <div class="card shadow border-0 p-4 mt-5">
+        <h3>Descripción del Sistema</h3>
+        <p class="text-muted">
+            Este sistema permite gestionar el ciclo completo de los servicios metalmecánicos,
+            iniciando con el registro del cliente, seguido de la creación del servicio,
+            la generación de la factura y finalmente el registro de los pagos realizados.
+            El sistema facilita el control administrativo, financiero y operativo de la empresa.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,25 +1,55 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, SubmitField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, Length
 
 class ClienteForm(FlaskForm):
+    nombres = StringField(
+        'Nombres',
+        validators=[DataRequired(message="El nombre es obligatorio")]
+    )
 
-    nombre = StringField(
-        'Nombre',
+    direccion = StringField(
+        'Dirección',
+        validators=[DataRequired(message="La dirección es obligatoria")]
+    )
+
+    telefono = StringField(
+        'Teléfono',
+        validators=[DataRequired(message="El teléfono es obligatorio")]
+    )
+
+    email = EmailField(
+        'Correo electrónico',
         validators=[
-            DataRequired(message="El nombre es obligatorio"),
-            Length(min=3, max=100)
+            DataRequired(message="El correo es obligatorio"),
+            Email(message="Ingrese un correo válido")
         ]
     )
 
-    apellido = StringField(
-        'Apellido',
+    cedula = StringField(
+        'Cédula',
+        validators=[DataRequired(message="La cédula es obligatoria")]
+    )
+
+    tipo_identificacion = SelectField(
+        'Tipo de identificación',
+        choices=[('cedula', 'Cédula'), ('ruc', 'RUC')]
+    )
+
+    tipo_cliente = SelectField(
+        'Tipo de cliente',
+        choices=[('normal', 'Normal'), ('vip', 'VIP')]
+    )
+
+    password = PasswordField(
+        'Contraseña',
         validators=[
-            DataRequired(message="El apellido es obligatorio"),
-            Length(min=3, max=100)
+            DataRequired(message="La contraseña es obligatoria"),
+            Length(min=6, message="Mínimo 6 caracteres")
         ]
     )
 
+    submit = SubmitField('Registrarse')
     telefono = StringField(
         'Teléfono',
         validators=[

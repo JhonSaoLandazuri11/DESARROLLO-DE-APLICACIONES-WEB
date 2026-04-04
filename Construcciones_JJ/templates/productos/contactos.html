@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Contactos - Construcciones JJ{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Contáctanos</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Información de Contacto</h5>
+                <p><strong>Empresa:</strong> Construcciones JJ</p>
+                <p><strong>Teléfono:</strong> 099999999</p>
+                <p><strong>Email:</strong> construccionesjj@gmail.com</p>
+                <p><strong>Dirección:</strong> Ambato, Ecuador</p>
+            </div>
+
+            <div class="col-md-6">
+                <h5>Envíanos un mensaje</h5>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" placeholder="Ingrese su nombre">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input type="email" class="form-control" placeholder="Ingrese su correo">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mensaje</label>
+                        <textarea class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

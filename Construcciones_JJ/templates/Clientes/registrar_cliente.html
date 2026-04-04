@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Registrar Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Registro de Cliente</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+
+                <!-- DATOS PERSONALES -->
+                <h5 class="text-secondary">Datos Personales</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nombres *</label>
+                        <input type="text" name="nombres" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Cédula / RUC *</label>
+                        <input type="text" name="cedula" class="form-control" required pattern="[0-9]+">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Identificación *</label>
+                        <select name="tipo_identificacion" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Cedula">Cédula</option>
+                            <option value="RUC">RUC</option>
+                            <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Cliente *</label>
+                        <select name="tipo_cliente" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Persona Natural">Persona Natural</option>
+                            <option value="Empresa">Empresa</option>
+                            <option value="Institución">Institución</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- CONTACTO -->
+                <h5 class="text-secondary">Información de Contacto</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" pattern="[0-9]+">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" class="form-control">
+                </div>
+
+                <hr>
+
+                <!-- BOTONES -->
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('clientes') }}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        Guardar Cliente
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

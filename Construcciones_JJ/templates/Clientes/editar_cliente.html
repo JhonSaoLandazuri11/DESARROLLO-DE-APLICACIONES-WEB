@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Editar Cliente</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('actualizar_cliente_route', id=cliente.id_cliente) }}">
+
+                <!-- DATOS PERSONALES -->
+                <h5 class="text-secondary">Datos Personales</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nombres *</label>
+                        <input type="text" name="nombres" class="form-control"
+                               value="{{ cliente.nombres }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Cédula / RUC *</label>
+                        <input type="text" name="cedula" class="form-control"
+                               value="{{ cliente.cedula }}" required pattern="[0-9]+">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Identificación *</label>
+                        <select name="tipo_identificacion" class="form-select" required>
+                            <option value="Cedula" {{ 'selected' if cliente.tipo_identificacion == 'Cedula' else '' }}>Cédula</option>
+                            <option value="RUC" {{ 'selected' if cliente.tipo_identificacion == 'RUC' else '' }}>RUC</option>
+                            <option value="Pasaporte" {{ 'selected' if cliente.tipo_identificacion == 'Pasaporte' else '' }}>Pasaporte</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Cliente *</label>
+                        <select name="tipo_cliente" class="form-select" required>
+                            <option value="Persona Natural" {{ 'selected' if cliente.tipo_cliente == 'Persona Natural' else '' }}>Persona Natural</option>
+                            <option value="Empresa" {{ 'selected' if cliente.tipo_cliente == 'Empresa' else '' }}>Empresa</option>
+                            <option value="Institución" {{ 'selected' if cliente.tipo_cliente == 'Institución' else '' }}>Institución</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- CONTACTO -->
+                <h5 class="text-secondary">Información de Contacto</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Teléfono</label>
+                        <input type="text" name="telefono" class="form-control"
+                               value="{{ cliente.telefono }}" pattern="[0-9]+">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control"
+                               value="{{ cliente.email }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" class="form-control"
+                           value="{{ cliente.direccion }}">
+                </div>
+
+                <hr>
+
+                <!-- BOTONES -->
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('clientes') }}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-warning">
+                        Actualizar Cliente
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

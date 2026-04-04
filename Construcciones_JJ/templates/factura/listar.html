@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Lista de Facturas</h3>
+    <!-- Botón para crear nueva factura -->
+    <a href="{{ url_for('nueva_factura') }}" class="btn btn-primary mb-3">Crear Factura</a>
+    </a>
+
+    {% if facturas %}
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Forma de Pago</th>
+                <th>Estado</th>
+                <th>Cliente</th>
+                <th>Servicio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in facturas %}
+            <tr>
+                <td>{{ f.Id_factura }}</td>
+                <td>{{ f.Numero_factura }}</td>
+                <td>{{ f.Fecha_emision }}</td>
+                <td>{{ f.Total_pago }}</td>
+                <td>{{ f.Forma_pago }}</td>
+                <td>{{ f.Estado_pago }}</td>
+                <td>{{ f.nombres }}</td>
+                <td>{{ f.tipo_servicio }}</td>
+                <td>
+                    <a href="{{ url_for('factura_pdf', id=f.Id_factura) }}" class="btn btn-sm btn-info">PDF</a>
+                    <a href="{{ url_for('eliminar_factura', id=f.Id_factura) }}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No hay facturas registradas aún.</p>
+    {% endif %}
+</div>
+{% endblock %}

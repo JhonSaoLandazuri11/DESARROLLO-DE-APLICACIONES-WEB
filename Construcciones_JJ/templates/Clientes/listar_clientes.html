@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h3>Lista de Clientes</h3>
+
+    <!-- BOTÓN NUEVO -->
+    <a href="{{ url_for('nuevo_cliente') }}" class="btn btn-success mb-3">
+        + Nuevo Cliente
+    </a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombres</th>
+                <th>Cédula</th>
+                <th>Tipo ID</th>
+                <th>Tipo Cliente</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in clientes %}
+            <tr>
+                <td>{{ c.id_cliente }}</td>
+                <td>{{ c.nombres }}</td>
+                <td>{{ c.cedula }}</td>
+                <td>{{ c.tipo_identificacion }}</td>
+                <td>{{ c.tipo_cliente }}</td>
+                <td>{{ c.telefono }}</td>
+                <td>{{ c.email }}</td>
+                <td>{{ c.direccion }}</td>
+
+                <!-- BOTONES -->
+                <td>
+                    <a href="{{ url_for('editar_cliente', id=c.id_cliente) }}" 
+                       class="btn btn-warning btn-sm">
+                       Editar
+                    </a>
+
+                    
+                    <a href="{{ url_for('eliminar_cliente_route', id=c.id_cliente) }}" 
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('¿Eliminar este cliente?')">
+                    Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

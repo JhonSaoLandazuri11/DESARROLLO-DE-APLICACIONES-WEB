@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<h2>Registro de Cliente</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.nombres.label }}
+        {{ form.nombres(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.direccion.label }}
+        {{ form.direccion(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.telefono.label }}
+        {{ form.telefono(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.email.label }}
+        {{ form.email(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.cedula.label }}
+        {{ form.cedula(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.tipo_identificacion.label }}
+        {{ form.tipo_identificacion(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.tipo_cliente.label }}
+        {{ form.tipo_cliente(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.password.label }}
+        {{ form.password(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.submit(class="btn btn-success") }}
+    </div>
+</form>
+{% endblock %}

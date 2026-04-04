@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lista de Servicios</h2>
+
+<a href="{{ url_for('registrar_servicio') }}" class="btn btn-primary">Nuevo Servicio</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Servicio</th>
+            <th>Estado</th>
+            <th>Costo</th>
+            <th>Cliente</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in servicios %}
+        <tr>
+            <td>{{ s.id_servicio }}</td>
+            <td>{{ s.tipo_identificacion }}</td>
+            <td>{{ s.tipo_servicio }}</td>
+            <td>
+                {% if s.estado_servicio == 1 %}
+                    Activo
+                {% else %}
+                    Inactivo
+                {% endif %}
+            </td>
+            <td>${{ s.costo_estimado }}</td>
+            <td>{{ s.cliente_nombre }}</td>
+            <td>
+                <a href="{{ url_for('editar_servicio', id=s.id_servicio) }}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="{{ url_for('eliminar_servicio_route', id=s.id_servicio) }}" class="btn btn-danger btn-sm"
+                onclick="return confirm('¿Está seguro de eliminar este servicio?');">Eliminar</a>
+                
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

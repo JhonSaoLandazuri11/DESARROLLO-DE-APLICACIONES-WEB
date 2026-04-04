@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Editar Servicio</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Identificación</label>
+                        <select name="tipo_identificacion" class="form-control" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Cedula" {% if servicio.tipo_identificacion == 'Cedula' %}selected{% endif %}>Cédula</option>
+                            <option value="RUC" {% if servicio.tipo_identificacion == 'RUC' %}selected{% endif %}>RUC</option>
+                            <option value="Pasaporte" {% if servicio.tipo_identificacion == 'Pasaporte' %}selected{% endif %}>Pasaporte</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de Servicio</label>
+                        <select name="tipo_servicio" class="form-control" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Mantenimiento" {% if servicio.tipo_servicio == 'Mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                            <option value="Reparacion" {% if servicio.tipo_servicio == 'Reparacion' %}selected{% endif %}>Reparación</option>
+                            <option value="Diagnostico" {% if servicio.tipo_servicio == 'Diagnostico' %}selected{% endif %}>Diagnóstico</option>
+                            <option value="Instalacion" {% if servicio.tipo_servicio == 'Instalacion' %}selected{% endif %}>Instalación</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Estado del Servicio</label>
+                    <select name="estado_servicio" class="form-control" required>
+                        <option value="">Seleccione...</option>
+                        <option value="Pendiente" {% if servicio.estado_servicio == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="En proceso" {% if servicio.estado_servicio == 'En proceso' %}selected{% endif %}>En proceso</option>
+                        <option value="Finalizado" {% if servicio.estado_servicio == 'Finalizado' %}selected{% endif %}>Finalizado</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Costo Estimado</label>
+                    <input type="number" step="0.01" name="costo_estimado" class="form-control"
+                           value="{{ servicio.costo_estimado }}" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label>Fecha Solicitud</label>
+                        <input type="datetime-local" name="fecha_solicitud" class="form-control"
+                               value="{{ servicio.fecha_solicitud }}" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Fecha Estimada</label>
+                        <input type="date" name="fecha_estimada" class="form-control"
+                               value="{{ servicio.fecha_estimada }}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Fecha Inicio</label>
+                        <input type="date" name="fecha_inicio" class="form-control"
+                               value="{{ servicio.fecha_inicio }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" class="form-control" rows="3">{{ servicio.descripcion }}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>RUC Empresa</label>
+                        <select name="RUC_empresa" class="form-control" required>
+                            <option value="">Seleccione una empresa</option>
+                            {% for empresa in empresas %}
+                                <option value="{{ empresa['RUC'] }}"
+                                    {% if empresa['RUC'] == servicio.ruc_empresa %}selected{% endif %}>
+                                    {{ empresa['nombre'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Cliente</label>
+                        <select name="id_cliente" class="form-control" required>
+                            <option value="">Seleccione un cliente</option>
+                            {% for cliente in clientes %}
+                                <option value="{{ cliente.id_cliente }}"
+                                    {% if cliente.id_cliente == servicio.id_cliente %}selected{% endif %}>
+                                    {{ cliente.nombres }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('listar_servicios') }}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        Actualizar Servicio
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,5 +1,7 @@
-from modelos.empresa import Empresa
 from modelos.db import db
+from MySQLdb.cursors import DictCursor
 
-def obtener_empresas():
-    return Empresa.query.all()
+def listar_empresas():
+    cursor = db.connection.cursor(DictCursor)
+    cursor.execute("SELECT * FROM empresa")
+    return cursor.fetchall()

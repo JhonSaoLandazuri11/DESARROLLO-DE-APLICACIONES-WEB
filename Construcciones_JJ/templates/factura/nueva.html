@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between border p-3 mb-4">
+        <div>
+            <h4><strong>Construcciones JJ</strong></h4>
+            <p>RUC: 1234567890001</p>
+            <p>Dirección: Puyo - Ecuador</p>
+            <p>Teléfono: 0983413918</p>
+        </div>
+
+        <div class="text-end">
+            <h3 class="text-danger"><strong>FACTURA</strong></h3>
+            <p><strong>N°:</strong></p>
+            <input type="text" name="numero" class="form-control" form="formFactura" required>
+        </div>
+    </div>
+
+    <form method="POST" id="formFactura">
+
+        <!-- DATOS CLIENTE -->
+        <div class="border p-3 mb-4">
+            <h5>Datos del Cliente</h5>
+            <select name="Id_cliente" class="form-control" required>
+                <option value="">-- Seleccione Cliente --</option>
+                {% for cliente in clientes %}
+                <option value="{{ cliente.id_cliente }}">{{ cliente.nombres }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- TABLA DE SERVICIO -->
+        <div class="border p-3 mb-4">
+            <h5>Detalle</h5>
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="Id_servicio" class="form-control" id="select_servicio" required>
+                                <option value="">-- Seleccione Servicio --</option>
+                                {% for s in servicios %}
+                                <option value="{{ s.id_servicio }}" data-precio="{{ s.costo_estimado }}">
+                                    {{ s.tipo_servicio }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+
+                        <td>
+                            <input type="number" id="cantidad" value="1" class="form-control" min="1">
+                        </td>
+
+                        <td>
+                            <!-- ahora editable -->
+                            <input type="number" id="precio" class="form-control" step="0.01">
+                        </td>
+
+                        <td>
+                            <input type="number" id="total_fila" class="form-control" readonly>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TOTALES -->
+        <div class="row">
+            <div class="col-md-6"></div>
+
+            <div class="col-md-6 border p-3">
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal:</span>
+                    <span id="subtotal"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span>Descuento:</span>
+                    <input type="number" id="descuento" value="0" class="form-control w-50" min="0">
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span>IVA (12%):</span>
+                    <span id="iva"></span>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <strong id="total"></strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMPOS OCULTOS PARA BD -->
+        <input type="hidden" name="Sub_total" id="input_subtotal">
+        <input type="hidden" name="IVA" id="input_iva">
+        <input type="hidden" name="Total_pago" id="input_total">
+        <input type="hidden" name="Descuento" id="input_descuento">
+
+        <!-- PAGO -->
+        <div class="mt-4">
+            <label>Forma de pago:</label>
+            <select name="forma_pago" class="form-control" required>
+                <option value="">Seleccione...</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Tarjeta">Tarjeta</option>
+            </select>
+
+            <label class="mt-2">Estado:</label>
+            <select name="estado_pago" class="form-control" required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Pagado">Pagado</option>
+            </select>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Guardar Factura</button>
+            <a href="{{ url_for('listar_facturas') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+
+<!-- SCRIPT PARA CALCULAR AUTOMÁTICAMENTE -->
+<script>
+function calcular() {
+    let cantidad = parseFloat(document.getElementById("cantidad").value);
+    let precio = parseFloat(document.getElementById("precio").value);
+    let descuento = parseFloat(document.getElementById("descuento").value);
+
+    cantidad = isNaN(cantidad) ? 0 : cantidad;
+    precio = isNaN(precio) ? 0 : precio;
+    descuento = isNaN(descuento) ? 0 : descuento;
+
+    let totalFila = cantidad * precio;
+    let subtotal = totalFila - descuento;
+    let iva = subtotal * 0.12;
+    let total = subtotal + iva;
+
+    subtotal = subtotal < 0 ? 0 : subtotal;
+    iva = isNaN(iva) ? 0 : iva;
+    total = isNaN(total) ? 0 : total;
+
+    document.getElementById("total_fila").value = totalFila.toFixed(2);
+    document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+    document.getElementById("iva").innerText = iva.toFixed(2);
+    document.getElementById("total").innerText = total.toFixed(2);
+
+    document.getElementById("input_subtotal").value = subtotal.toFixed(2);
+    document.getElementById("input_iva").value = iva.toFixed(2);
+    document.getElementById("input_total").value = total.toFixed(2);
+    document.getElementById("input_descuento").value = descuento.toFixed(2);
+}
+
+// eventos
+document.getElementById("cantidad").addEventListener("input", calcular);
+document.getElementById("precio").addEventListener("input", calcular);
+document.getElementById("descuento").addEventListener("input", calcular);
+document.getElementById("select_servicio").addEventListener("change", function() {
+    let precioServicio = parseFloat(this.selectedOptions[0]?.dataset.precio || 0);
+    document.getElementById("precio").value = precioServicio.toFixed(2);
+    calcular();
+});
+
+document.getElementById("formFactura").addEventListener("submit", function() {
+    calcular();
+});
+
+// calcular al cargar
+calcular();
+</script>
+
+{% endblock %}
